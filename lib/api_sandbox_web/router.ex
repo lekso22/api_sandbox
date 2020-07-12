@@ -12,7 +12,7 @@ defmodule ApiSandboxWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
-    # plug Plugs.ApiKeyAuth
+    plug Plugs.ApiKeyAuth
   end
 
   scope "/", ApiSandboxWeb do
@@ -23,6 +23,8 @@ defmodule ApiSandboxWeb.Router do
 
   scope "/api", ApiSandboxWeb do
     pipe_through :api
-    get "/accounts", AccountController, :index
+    get "/accounts", ApiController, :index
+    get "/accounts/:account_id", ApiController, :show
+    get "/accounts/:account_id/transactions", ApiController, :show_transactions
   end
 end
