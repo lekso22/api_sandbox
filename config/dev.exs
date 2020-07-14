@@ -20,6 +20,8 @@ config :api_sandbox, ApiSandboxWeb.Endpoint,
       cd: Path.expand("../assets", __DIR__)
     ]
   ]
+config :api_sandbox,
+  url: "http://localhost:4000"
 
 # ## SSL Support
 #
@@ -51,7 +53,7 @@ config :api_sandbox, ApiSandboxWeb.Endpoint,
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"lib/api_sandbox_web/(live|views)/.*(ex)$",
-      ~r"lib/api_sandbox_web/templates/.*(eex)$"
+      ~r"lib/api_sandbox_web/templates/.*(eex|slim|slime)$"
     ]
   ]
 

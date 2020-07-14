@@ -9,33 +9,43 @@ defmodule ApiSandboxWeb.Telemetry do
   @impl true
   def init(_arg) do
     children = [
-      # Telemetry poller will execute the given period measurements
-      # every 10_000ms. Learn more here: https://hexdocs.pm/telemetry_metrics
       {:telemetry_poller, measurements: periodic_measurements(), period: 10_000}
-      # Add reporters as children of your supervision tree.
-      # {Telemetry.Metrics.ConsoleReporter, metrics: metrics()}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
   end
 
   def metrics do
+    #phoenix metrics
     [
-      # Phoenix Metrics
       summary("phoenix.endpoint.stop.duration",
+        tags: [:method, :request_path],
+        tag_values: &tag_method_and_request_path/1,
         unit: {:native, :millisecond}
       ),
       summary("phoenix.router_dispatch.stop.duration",
-        tags: [:route],
+        tags: [:method, :route],
+        tag_values: &get_and_put_http_method/1,
         unit: {:native, :millisecond}
       ),
 
       # VM Metrics
-      summary("vm.memory.total", unit: {:byte, :kilobyte}),
+      summary(
+        "vm.memory.total",
+        description: "Total amount of memory allocated by the Erlang VM", unit: :byte
+      ),
       summary("vm.total_run_queue_lengths.total"),
       summary("vm.total_run_queue_lengths.cpu"),
       summary("vm.total_run_queue_lengths.io")
     ]
+  end
+
+  def tag_method_and_request_path(metadata) do
+    Map.take(metadata.conn, [:method, :request_path])
+  end
+
+  defp get_and_put_http_method(%{conn: %{method: method}} = metadata) do
+    Map.put(metadata, :method, method)
   end
 
   defp periodic_measurements do

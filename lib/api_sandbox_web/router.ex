@@ -1,5 +1,6 @@
 defmodule ApiSandboxWeb.Router do
   use ApiSandboxWeb, :router
+  import Phoenix.LiveDashboard.Router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -15,16 +16,27 @@ defmodule ApiSandboxWeb.Router do
     plug Plugs.ApiKeyAuth
   end
 
+
   scope "/", ApiSandboxWeb do
     pipe_through :browser
 
-    live "/", PageLive, :index
+    get "/", PageController, :index
   end
 
   scope "/api", ApiSandboxWeb do
     pipe_through :api
-    get "/accounts", ApiController, :index
-    get "/accounts/:account_id", ApiController, :show
+    get "/accounts", ApiController, :show_accounts
+    get "/accounts/:account_id", ApiController, :show_account
     get "/accounts/:account_id/transactions", ApiController, :show_transactions
+    get "/accounts/:account_id/transactions/:transaction_id", ApiController, :show_transaction
+  end
+
+  if Mix.env() == :dev do
+    import Phoenix.LiveDashboard.Router
+
+    scope "/" do
+      pipe_through :browser
+      live_dashboard "/dashboard", metrics: ApiSandboxWeb.Telemetry
+    end
   end
 end
