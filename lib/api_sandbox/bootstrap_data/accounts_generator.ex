@@ -2,6 +2,7 @@ defmodule ApiSandbox.AccountsGenerator do
   require Integer
 
   def generate_data(token) do
+    # all the data will be generated based on the auth token
     if !is_nil(token) do
       token = extract_token_part(token)
       [
@@ -12,7 +13,7 @@ defmodule ApiSandbox.AccountsGenerator do
           currency_code: "USD",
           enrollment_id: gen_enr_id(token),
           institution: gen_institution(token),
-          name: "Teller API Sandbox Checking",
+          name: "API Sandbox Checking",
           routing_numbers: gen_routing_numbers(token),
           links: gen_links(token)
         }
@@ -25,6 +26,7 @@ defmodule ApiSandbox.AccountsGenerator do
     num_list = Integer.digits(num)
     _account_number =
       cond do
+        # Just making sure that all account numbers are consistently of 10 digits
         length(num_list) < 10 -> Integer.to_string(1000000000 + num)
         length(num_list) > 10 ->
           num_list
@@ -39,7 +41,7 @@ defmodule ApiSandbox.AccountsGenerator do
       gen_number(token)
       |> :math.sqrt()
 
-    running = Timex.day(Timex.today) * running / 1000 |> Float.round(2) #gives balance, changes daily
+    running = Timex.day(Timex.today) * running / 1000 |> Float.round(2) # Balance will change daily
     %{
       available: running,
       ledger: running
@@ -70,10 +72,10 @@ defmodule ApiSandbox.AccountsGenerator do
       |> Enum.sum()
 
 
-    if Integer.is_even(num) do #can be done more cases, providing "proof of concept"
+    if Integer.is_even(num) do #can be done more cases, just providing "proof of concept"
       %{
-        id: "teller_bank",
-        name: "The Teller Bank"
+        id: "fake_bank",
+        name: "The Fake Bank"
       }
       else
         %{
@@ -85,6 +87,7 @@ defmodule ApiSandbox.AccountsGenerator do
 
   def gen_routing_numbers(token) do
     num = gen_number(token)
+    # Both numbers are of 9 digits
     ach =
       num
       |> Integer.digits()
@@ -124,6 +127,7 @@ defmodule ApiSandbox.AccountsGenerator do
   end
 
   def gen_links(token) do
+    # Generating links manually in this case
     url = Application.fetch_env!(:api_sandbox, :url)
     %{
       self: "#{url}/api/accounts/#{gen_id(token)}",
@@ -132,6 +136,7 @@ defmodule ApiSandbox.AccountsGenerator do
   end
 
   def extract_token_part(token) do
+    # Only the part between the two underscores of the token is relevant
     String.split(token, "_") |> Enum.at(1)
   end
 end

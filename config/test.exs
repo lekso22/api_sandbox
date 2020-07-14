@@ -6,5 +6,9 @@ config :api_sandbox, ApiSandboxWeb.Endpoint,
   http: [port: 4002],
   server: false
 
+config :api_sandbox,
+  url: "http://localhost:4002"
+
+
 # Print only warnings and errors during test
 config :logger, level: :warn

@@ -28,10 +28,10 @@ defmodule Plugs.ApiKeyAuth do
   end
 
   def validate_token(token) do
-    splited_token = String.split(token, "_")
-    p1 = splited_token |> Enum.at(0)
-    p2 = splited_token |> Enum.at(1)
-    p3 = splited_token |> Enum.at(2)
-    length(splited_token) == 3 && p1 == "test" && String.length(p2) > 5 && String.length(p2) < 15 && String.length(p3) > 2 && String.length(p3) < 8
+    splitted_token = String.split(token, "_") # Valid token should include two underscores - random rule
+    p1 = splitted_token |> Enum.at(0)
+    p2 = splitted_token |> Enum.at(1)
+    p3 = splitted_token |> Enum.at(2)
+    length(splitted_token) == 3 && p1 == "test" && String.length(p2) > 5 && String.length(p2) < 15 && String.length(p3) > 2 && String.length(p3) < 8
   end
 end

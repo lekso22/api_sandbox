@@ -13,7 +13,7 @@ defmodule ApiSandboxWeb.ApiController do
   def show_account(conn, %{"account_id" => account_id}) do
     account = Enum.find(conn.assigns[:accounts], &(&1.id == account_id))
 
-    if(account.id == account_id) do
+    if(!is_nil(account)) do
       conn
       |> put_status(200)
       |> json(account)
@@ -26,7 +26,7 @@ defmodule ApiSandboxWeb.ApiController do
   def show_transactions(conn, %{"account_id" => account_id}) do
     account = Enum.find(conn.assigns[:accounts], &(&1.id == account_id))
     transactions = get_transactions(account)
-    unless is_nil(account) do
+    if !is_nil(account) do
       conn
       |> put_status(200)
       |> json(transactions)
@@ -57,14 +57,14 @@ defmodule ApiSandboxWeb.ApiController do
 
   def get_transactions(account_data) do
     if !is_nil(account_data) do
-      running_balance = account_data.balances.available |> Float.round(2)
-      amount = Timex.day(Timex.today) * running_balance / 100000 |> Float.round(2) #gives amount, changes daily
+      running_balance = account_data.balances.available
+      amount = Timex.day(Timex.today) * running_balance / 100000 |> Float.round(2) # gives "random" amount, changes daily
       TransactionsGenerator.generate_transaction(account_data.id, number_of_transactions(), running_balance, amount, Timex.today())
     end
   end
 
   def number_of_transactions() do
     date = ~D[2020-07-09] # fixed reference date
-    Timex.diff(Timex.today(), date, :days)
+    Timex.diff(Timex.today(), date, :days) # Number of transactions to be generated will increase daily
   end
 end

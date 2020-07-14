@@ -18,10 +18,11 @@ defmodule ApiSandbox.TransactionsGenerator do
   end
 
   def generate_transaction(account_id, n, running, amount, date) do
+    # generate n transactions, going back in time
     [
       %{
         type: "card_payment",
-        running_balance: round_balance(running),
+        running_balance: round_balance(running), # running balance of the latest transaction is the same as account balance
         id: gen_id(n),
         description: "Exxon Mobil",
         date: date,
@@ -49,11 +50,8 @@ defmodule ApiSandbox.TransactionsGenerator do
     "test_txn_#{string_gen}"
   end
 
-  def extract_string_part(account_id) do
-    String.split(account_id, "_") |> Enum.at(2)
-  end
-
   def gen_links(account_id, n) do
+    # links will be generated manually, no need for a dependency for sandbox
     url = Application.fetch_env!(:api_sandbox, :url)
     %{
       self: "#{url}/api/accounts/#{account_id}/transactions/#{gen_id(n)}",
